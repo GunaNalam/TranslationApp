@@ -28,7 +28,7 @@ Your changes are ready to be pushed. The serverless functions are now in the `ap
    - Click "Environment Variables"
    - Add:
      - **Name**: `GEMINI_API_KEY`
-     - **Value**: `AIzaSyCo7PvQl9KijIJwdFjJA7jmPaReruNwKf8`
+     - **Value**: `YOUR_GEMINI_API_KEY_HERE`
    - Make sure it's added for all environments (Production, Preview, Development)
 
 6. **Deploy**
