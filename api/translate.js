@@ -52,16 +52,34 @@ export default async function handler(req, res) {
         );
 
         if (!response.ok) {
-            return res.status(response.status).json({ error: 'Translation failed' });
+            const error = await response.text();
+            console.error('Translation API error:', error);
+            return res.status(response.status).json({
+                error: 'Translation failed',
+                details: error
+            });
         }
 
         const data = await response.json();
+
+        // Check if response has the expected structure
+        if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+            console.error('Unexpected API response:', JSON.stringify(data));
+            return res.status(500).json({
+                error: 'Unexpected response from AI',
+                details: JSON.stringify(data)
+            });
+        }
+
         const translatedText = data.candidates[0].content.parts[0].text.trim();
 
         return res.status(200).json({ text: translatedText });
 
     } catch (error) {
         console.error('Translation error:', error);
-        return res.status(500).json({ error: 'Translation error' });
+        return res.status(500).json({
+            error: 'Translation error',
+            details: error.message
+        });
     }
 }

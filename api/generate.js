@@ -54,16 +54,32 @@ export default async function handler(req, res) {
         if (!response.ok) {
             const error = await response.text();
             console.error('Gemini API error:', error);
-            return res.status(response.status).json({ error: 'Failed to generate message' });
+            return res.status(response.status).json({
+                error: 'Failed to generate message',
+                details: error
+            });
         }
 
         const data = await response.json();
+
+        // Check if response has the expected structure
+        if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+            console.error('Unexpected API response:', JSON.stringify(data));
+            return res.status(500).json({
+                error: 'Unexpected response from AI',
+                details: JSON.stringify(data)
+            });
+        }
+
         const generatedText = data.candidates[0].content.parts[0].text.trim();
 
         return res.status(200).json({ text: generatedText });
 
     } catch (error) {
         console.error('Server error:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({
+            error: 'Internal server error',
+            details: error.message
+        });
     }
 }
