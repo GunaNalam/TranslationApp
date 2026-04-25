@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>English Message Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: #666;
+        }
+
+
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        input[type="text"], 
+        input[type="password"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'Noto Sans Telugu', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, 
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-voice {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-voice:hover {
+            background: #059669;
+        }
+
+        .btn-voice.listening {
+            background: #ef4444;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #333;
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+        }
+
+        .btn-copy {
+            background: #6366f1;
+            color: white;
+        }
+
+        .main-section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .main-section.hidden {
+            display: none;
+        }
+
+        .result-section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .result-section.hidden {
+            display: none;
+        }
+
+        .result-box {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-box h3 {
+            font-size: 14px;
+            color: #667eea;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-box p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #1f2937;
+            font-family: 'Noto Sans Telugu', sans-serif;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #dc2626;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .button-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .language-selector {
+            margin-bottom: 15px;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;600&display=swap');
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 English Message Generator</h1>
+            <p>Speak or type in your language, get a formal English message</p>
+        </div>
+
+        <!-- Main Input Section -->
+        <div class="main-section" id="mainSection">
+            <div class="language-selector">
+                <label for="language">Select Your Language</label>
+                <select id="language">
+                    <option value="te-IN">తెలుగు (Telugu)</option>
+                    <option value="hi-IN">हिन्दी (Hindi)</option>
+                    <option value="ta-IN">தமிழ் (Tamil)</option>
+                    <option value="kn-IN">ಕನ್ನಡ (Kannada)</option>
+                    <option value="ml-IN">മലയാളം (Malayalam)</option>
+                    <option value="mr-IN">मराठी (Marathi)</option>
+                    <option value="bn-IN">বাংলা (Bengali)</option>
+                    <option value="gu-IN">ગુજરાતી (Gujarati)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="userInput">What do you want to say?</label>
+                <textarea id="userInput" placeholder="Type or speak what you want to say..."></textarea>
+            </div>
+
+            <button class="btn btn-voice" id="voiceBtn" onclick="startVoiceInput()">
+                🎤 <span id="voiceBtnText">Tap to Speak</span>
+            </button>
+
+            <button class="btn btn-primary" onclick="generateMessage()">✨ Generate English Message</button>
+
+            <button class="btn btn-secondary" onclick="clearInput()">🗑️ Clear</button>
+        </div>
+
+        <!-- Loading Section -->
+        <div class="loading hidden" id="loadingSection">
+            <div class="spinner"></div>
+            <p>Generating your message...</p>
+        </div>
+
+        <!-- Result Section -->
+        <div class="result-section hidden" id="resultSection">
+            <div class="result-box">
+                <h3>📧 Formal English Message</h3>
+                <p id="englishMessage"></p>
+            </div>
+
+            <div class="result-box">
+                <h3>🔄 Translation (Your Language)</h3>
+                <p id="translatedMessage"></p>
+            </div>
+
+            <div class="button-row">
+                <button class="btn btn-copy" onclick="copyMessage()">📋 Copy</button>
+                <button class="btn btn-whatsapp" onclick="shareWhatsApp()">💬 WhatsApp</button>
+            </div>
+
+            <button class="btn btn-secondary" onclick="createNew()">✍️ Create New Message</button>
+        </div>
+
+        <!-- Error Display -->
+        <div class="error hidden" id="errorSection"></div>
+    </div>
+
+    <script>
+        // State management
+        let conversationHistory = [];
+        let recognition = null;
+        let currentEnglishMessage = '';
+
+        // Initialize Speech Recognition
+        function initSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+            }
+        }
+
+        initSpeechRecognition();
+
+        // Voice Input
+        function startVoiceInput() {
+            if (!recognition) {
+                showError('Voice input is not supported on this browser');
+                return;
+            }
+
+            const language = document.getElementById('language').value;
+            recognition.lang = language;
+
+            const voiceBtn = document.getElementById('voiceBtn');
+            const voiceBtnText = document.getElementById('voiceBtnText');
+
+            voiceBtn.classList.add('listening');
+            voiceBtnText.textContent = 'Listening...';
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('userInput').value = transcript;
+                voiceBtn.classList.remove('listening');
+                voiceBtnText.textContent = 'Tap to Speak';
+            };
+
+            recognition.onerror = (event) => {
+                voiceBtn.classList.remove('listening');
+                voiceBtnText.textContent = 'Tap to Speak';
+                showError('Voice recognition error. Please try again.');
+            };
+
+            recognition.onend = () => {
+                voiceBtn.classList.remove('listening');
+                voiceBtnText.textContent = 'Tap to Speak';
+            };
+
+            recognition.start();
+        }
+
+        // Generate Message using Gemini API
+        async function generateMessage() {
+            const userInput = document.getElementById('userInput').value.trim();
+
+            if (!userInput) {
+                showError('Please enter or speak what you want to say');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('mainSection').classList.add('hidden');
+            document.getElementById('loadingSection').classList.remove('hidden');
+            document.getElementById('errorSection').classList.add('hidden');
+
+            try {
+                // Add to conversation history
+                conversationHistory.push({
+                    role: 'user',
+                    input: userInput
+                });
+
+                // Keep only last 5 exchanges
+                if (conversationHistory.length > 5) {
+                    conversationHistory = conversationHistory.slice(-5);
+                }
+
+                // Build context from history
+                let contextPrompt = '';
+                if (conversationHistory.length > 1) {
+                    contextPrompt = '\n\nPrevious conversation context:\n';
+                    conversationHistory.slice(0, -1).forEach((item, idx) => {
+                        contextPrompt += `${idx + 1}. User said: "${item.input}"\n   Generated: "${item.output}"\n`;
+                    });
+                }
+
+                const prompt = `You are a professional message writer. The user wants to send a formal, well-written English message to someone.
+
+User's input (may be in Telugu or another Indian language): "${userInput}"
+${contextPrompt}
+
+Please:
+1. Understand what the user wants to communicate
+2. Generate a formal, polite, and well-written English message
+3. Make it professional and respectful in tone
+4. Keep it clear and concise
+
+Respond ONLY with the formal English message, nothing else.`;
+
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to generate message. Please try again.');
+                }
+
+                const data = await response.json();
+                const englishMessage = data.text;
+                currentEnglishMessage = englishMessage;
+
+                // Update history
+                conversationHistory[conversationHistory.length - 1].output = englishMessage;
+
+                // Generate translation back to user's language
+                const translatedMessage = await translateToUserLanguage(englishMessage);
+
+                // Display results
+                displayResults(englishMessage, translatedMessage);
+
+            } catch (error) {
+                console.error('Error:', error);
+                showError(error.message || 'Failed to generate message. Please try again.');
+                document.getElementById('loadingSection').classList.add('hidden');
+                document.getElementById('mainSection').classList.remove('hidden');
+            }
+        }
+
+        // Translate English message back to user's language
+        async function translateToUserLanguage(englishText) {
+            try {
+                const languageNames = {
+                    'te-IN': 'Telugu',
+                    'hi-IN': 'Hindi',
+                    'ta-IN': 'Tamil',
+                    'kn-IN': 'Kannada',
+                    'ml-IN': 'Malayalam',
+                    'mr-IN': 'Marathi',
+                    'bn-IN': 'Bengali',
+                    'gu-IN': 'Gujarati'
+                };
+
+                const selectedLang = document.getElementById('language').value;
+                const languageName = languageNames[selectedLang];
+
+                const translatePrompt = `Translate the following English message to ${languageName}. Provide ONLY the translation, nothing else.
+
+English message: "${englishText}"`;
+
+                const response = await fetch('/api/translate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt: translatePrompt })
+                });
+
+                if (!response.ok) {
+                    return 'Translation not available';
+                }
+
+                const data = await response.json();
+                return data.text;
+
+            } catch (error) {
+                console.error('Translation error:', error);
+                return 'Translation not available';
+            }
+        }
+
+        // Display results
+        function displayResults(englishMessage, translatedMessage) {
+            document.getElementById('englishMessage').textContent = englishMessage;
+            document.getElementById('translatedMessage').textContent = translatedMessage;
+
+            document.getElementById('loadingSection').classList.add('hidden');
+            document.getElementById('resultSection').classList.remove('hidden');
+        }
+
+        // Copy message to clipboard
+        function copyMessage() {
+            navigator.clipboard.writeText(currentEnglishMessage).then(() => {
+                showSuccess('Message copied to clipboard!');
+            }).catch(err => {
+                showError('Failed to copy message');
+            });
+        }
+
+        // Share via WhatsApp
+        function shareWhatsApp() {
+            const encodedMessage = encodeURIComponent(currentEnglishMessage);
+            const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Create new message
+        function createNew() {
+            document.getElementById('resultSection').classList.add('hidden');
+            document.getElementById('mainSection').classList.remove('hidden');
+            document.getElementById('userInput').value = '';
+        }
+
+        // Clear input
+        function clearInput() {
+            document.getElementById('userInput').value = '';
+            conversationHistory = [];
+        }
+
+        // Show error
+        function showError(message) {
+            const errorSection = document.getElementById('errorSection');
+            errorSection.textContent = message;
+            errorSection.classList.remove('hidden');
+            setTimeout(() => {
+                errorSection.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = message;
+            document.querySelector('.container').insertBefore(successDiv, document.querySelector('.container').firstChild);
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
