@@ -1,4 +1,5 @@
 // Vercel Serverless Function for translating messages
+// Updated: 2026-04-25
 export default async function handler(req, res) {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Credentials', true);
